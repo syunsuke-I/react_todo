@@ -45,8 +45,11 @@ function App() {
   };
 
   const onClickDel = (todoIndex) => {
-    const newTodos = todos.filter(todo => todo.index !== todoIndex);
-    setTodos(newTodos);
+    const isDelCheck = window.confirm("削除しますか？");
+    if (isDelCheck) {
+      const newTodos = todos.filter(todo => todo.index !== todoIndex);
+      setTodos(newTodos);
+    }
   };
 
   const onClickEdit = (index) => {
