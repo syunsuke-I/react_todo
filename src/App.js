@@ -1,10 +1,10 @@
-import React, { useState ,useRef, useEffect} from "react";
+import React, { useState ,useRef} from "react";
 
 import './App.css';
 
 function App() {
 
-  const todoRefs = useRef({});
+  // 編集は1つのTODOのみにするための排他フラグ
   const [isEditingExclusive, setIsEditingExclusive] = useState(false);
 
   const [newTodo, setNewTodo] = useState({
@@ -15,6 +15,10 @@ function App() {
   });
   
   const [todos, setTodos] = useState([]);
+
+  const allTodo = todos.length;
+  const completedTodo = todos.filter(todo => todo.isCompleted).length;
+  const incompletedTodo = allTodo - completedTodo;
 
   const [editingText, setEditingText] = useState("");
 
@@ -45,12 +49,14 @@ function App() {
   };
 
   const onClickDel = (todoIndex) => {
-    const isDelCheck = window.confirm("削除しますか？");
+    const isDelCheck = window.confirm("本当によろしいですか？");
     if (isDelCheck) {
       const newTodos = todos.filter(todo => todo.index !== todoIndex);
       setTodos(newTodos);
     }
   };
+
+  const todoRefs = useRef({});
 
   const onClickEdit = (index) => {
     if (!isEditingExclusive) {
@@ -117,11 +123,15 @@ function App() {
               <button onClick={onClickAdd} id="createTodoButton" className="bg-blue-500 text-white px-4 py-2 rounded-md">作成</button> 
             </div>
             <ul className="space-y-4">
-              {todos.map((todo,arrayIndex) => (
+              {todos.map((todo) => (
                 <>
                 <div className="flex" key={todo.index}>
                   <div className="flex items-center">
-                      <input type="checkbox" className={`${todo.isEditing ? "hidden" : ""}`} onClick={(e) => onClickDone(todo.index)}/>
+                      <input type="checkbox" 
+                        className={`${todo.isEditing ? "hidden" : ""}`} 
+                        onClick={(e) => onClickDone(todo.index)}
+                        checked={todo.isCompleted}
+                      />
                       {todo.isEditing ? (
                         <input
                           ref={(el) => (todoRefs.current[todo.index] = el)}
@@ -151,17 +161,9 @@ function App() {
             </ul>
       
             <div className="mt-4">
-              <span id="totalTaskCount">全てのタスク：{todos.length}</span>
-              <span id="completedTaskCount" className="ml-4">完了済み：
-                {
-                  todos.filter(todo => todo.isCompleted).length
-                }
-              </span>
-              <span id="incompleteTaskCount" className="ml-4">未完了：
-              {
-                todos.length- todos.filter(todo => todo.isCompleted).length
-              }
-              </span>
+              <span id="totalTaskCount">全てのタスク：{allTodo}</span>
+              <span id="completedTaskCount" className="ml-4">完了済み：{completedTodo}</span>
+              <span id="incompleteTaskCount" className="ml-4">未完了：{incompletedTodo}</span>
             </div>
           </div>
         </div>
